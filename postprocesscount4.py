@@ -116,7 +116,7 @@ def fullTax2IDS( fullTax ):
     else:
         familyID = -1
 
-    return (speciesID, speciesID, genusID, familyID)
+    return (speciesID, genusID, familyID)
 
 # helper function to use local augmented reference sequence names for lookup
 def lookupFungi( k, fungiLookup, names):
