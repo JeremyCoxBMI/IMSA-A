@@ -20,12 +20,17 @@ The IMSA license file and notice of copyright is included with this release.
 """
 JWC (Jeremy.Cox@cchmc.org) modifying this code to do different postprocessing.
 
-THIS SCRIPT IS POSTPROCESSOR UPGRADES ASSOCIATED WITH IMSA+A
+THIS SCRIPT CONTAINS POSTPROCESSOR UPGRADES ASSOCIATED WITH IMSA+A
 However, the postprocessor can be used with regular IMSA pipeline results.
 
-MODIFICATION
-Instead of tracking only totalsum = hits+partial sums,
-it tracks total sum (float), unique hits(int), partial hits(int), and partial hit sum for the partial hits (float).
+MODIFICATIONS
+
+* Counting Scheme
+
+Original IMSA tabulated 'total count' = hits+partial sums,
+IMSA+A tracks total count (float), but also counts
+unique hits(int), partial hits(int), and partial hit sum for the partial hits (float).
+
 Essentially, this modification required substituting a tuple for a float throughout the code.
 4count results are filtered to include only results with unique hits > 0.
 This required tweaking multiple libraries, which are now embedded here.
@@ -38,49 +43,56 @@ Two files are created
         FILE.report.IMSA_count.txt
         FILE.report.IMSA+A_4count.txt   #4 counts, filtered to include unique count > 0
 
+* Virus accomodations
+
 To help with accurate classification of viruses, a new first taxon report is created.
 (FILE.firstTaxon.IMSA_count.txt and FILE.firstTaxon.IMSA+A_4count.txt).
+
+* divisionID removed
+
+divisionIDs were removed from analysis.  This only reports firstTaxon, species, genus, family.
 
 _________________________
  Additional New Features
 *************************
 
-Can recognize species by reference sequence names not containing a gi number, when those numbers are added to file
+- Can recognize species by reference sequence names not containing a gi number, when those numbers are added to file
 referred to in systemSettings.fungiLookUp
-Counting method modified to recalculate uniqueness at every clade.  This is very similar to LCA binning by MEGAN.
-Much more detailed messages during execution, directed to STDERR.
-Optimized to read blast besthits input line by line, instead of reading entire file all at once to allow for larger files.
-Saves computationally intensive data objects to pickles to support resuming / recalculating.
+- Counting method modified to recalculate uniqueness at every clade.  This is very similar to LCA binning by MEGAN.
+- Much more detailed messages during execution, directed to STDERR.
+- Optimized to read blast besthits input line by line, instead of reading entire file all at once to allow for larger files.
+- Saves computationally intensive data objects to pickles to support resuming / recalculating.
 
 If the blast alignments file changes, all these pickles must be deleted for accurate computation.
 
-Generates a new report:   FILE.tax_unidentifiedTaxaAlignmentsJWC.txt
+Generates a new report:   FILE.tax_unidentifiedTaxaAlignments.txt
 These missing entries can be looked up and added to systemSettings.EXTRA_BLAST_TAX_DB, which IMSA will parse to find names.
     Note that if systemSettings.EXTRA_BLAST_TAX_DB file is updated, you must delete .taxonomy.pickle when re-running.
 
 Handles unknowns gracefully, reporting taxon ID = -1
     As previously mentioned, there is built-in support to help eliminate this with USER intervention.
+    However, IMSA-A now has a way to handle the error gracefully and report gracefully, so that the program does not crash.
 
-divisionID were removed from analysis.  This only report firstTaxon, species, genus, family.
+
 """
 
 # This script is designed to do the typical processing done after the IMSA pipeline completes.
 # This script takes in the blast vs. NT, filters to best hits, and runs the taxonomy report.
 
 # Paths to local data files
-from systemSettings import *
 
+import config
+#systemSettings overrides config settings if necessary
+from systemSettings import *
 import sys
 from getopt import getopt
 import os
-
 import pipelineUtils
 import blastUtils
-import config
 import eutilsWrapper
 
-HELP_STRING = """Given the results of the filtered reads blasted against NT, this script
-does the best hit blast filter and then runs the taxonomy report.
+HELP_STRING = """Given the results of the filtered reads blasted against reference database, this script
+does the best hit blast filter and then runs the taxonomy reports.  Uses Python 2.7.
 
 Required Inputs:
     -b    Blast output file
@@ -88,6 +100,8 @@ Required Inputs:
 Optional Inputs:
     -f    this option is deprecated for IMSA+A 4 count.  (It may still function)
           This program now outputs file with extension .firstTaxon.IMSA+A_4count.txt for better virus classification.
+
+REQUIRES PYTHON 2.7
 """
 
 #new function
@@ -442,6 +456,8 @@ def processHitList(taxaCount, speciesCount, genusCount, familyCount, hitList, cu
             if not taxaCount.has_key(taxaID):
                 taxaCount[taxaID] = (0,0,0,0)
             taxaCount[taxaID] = addToTuple( taxaCount[taxaID], result )
+            #if taxaID == -1:
+            #    print "This is a debug trap for debugging."
 
         for speciesID in speciesD:
             partial = float(speciesD[speciesID]) / len(hitList)
@@ -478,7 +494,102 @@ def processHitList(taxaCount, speciesCount, genusCount, familyCount, hitList, cu
     # end   if len(hitList) == 1:
     return
 
+
+# this is a helper function used to determine Kingdom of groups
+# without hard coding the Kingdom names, this is difficult; kingdom or superkingdom?
+# let's try good old simple Kingdom for the time being
+
+def findKingdom( taxaID, nodes):
+    curr = int(taxaID)
+    if curr in nodes:
+        while nodes[curr][1] != "kingdom" and nodes[curr][1] != "superkingdom" :
+            curr = nodes[curr][0]
+    else:
+        curr = 1    #default determination is root
+
+    return curr
+
+    # if (curr == -1): #ERROR code
+    #     return -1
+    # while curr != 1:
+    #         #caps required
+    #     if names[curr] == "Viruses" or names[curr] == "Bacteria" or names[curr] == "Fungi":
+    #         break
+    #     if names[curr] == "Stramenopiles":
+    #         print >> sys.stderr, "Stramenopiles found %d %s, counting as FUNGI " % (int(taxaID),names[int(taxaID)])
+    #         curr = 4751 #change to Fungi
+    #         break
+    #     curr = nodes[curr][0]
+    #
+    # if curr == 1:
+    #     return -1
+    # return names[curr]
+
+
+
 # original IMSA code modified to handle 4-tuple and new counting scheme and upgrades
+def fillOutCountFiles(KEYS, familyCount, taxaNames, taxaNodes, outFile, outFile2, category, savedKingdoms):
+    outFile.write("%s\t%s\t%s\t%s\t%s\n" %
+                  (category+" ID", "Scientific Name", "IMSA+A count", "Kingdom", "Total\tUnique clade hits\tPartial clade hits\tPartial clade sum"))
+
+    outFile2.write("%s\t%s\t%s\n" %
+               (category+" ID", "Scientific Name", "IMSA count"))
+
+    for taxID in KEYS:
+        if taxID == -1 or taxID == "-1":
+            sname = -1
+            # count = taxaCount[taxID]
+        elif taxID in taxaNames:
+            sname = taxaNames[taxID]
+        else:
+            sname = -1
+        count = familyCount[taxID]
+
+        if taxID in taxaNodes:
+            kingdom = findKingdom(taxID, taxaNodes)
+        elif taxID in savedKingdoms:
+            kingdom = savedKingdoms[taxID]
+        else:
+            kingdom = 1
+
+
+        if (count[1] > 0):  # if unique count > 0
+            myLine = "%s\t%s\t%s\t%s\t%s\n" % (str(taxID), sname, count[1], taxaNames[kingdom], catV(count))
+            outFile.write(myLine)
+        myLine = "%s\t%s\t%s\n" % (str(taxID), sname, str(count[0]))
+        outFile2.write(myLine)
+
+def prettyEntry(entry):    # 4 tuple: score, taxon ID, scientific name, kingdom
+    return '{:15}\t{:35}\t{:15}\t{:15}\n'.format(entry[1],entry[2],str(entry[0]),entry[3])
+
+
+def processOutputFileHumanReadable(outBig, filename):
+    firstLine = True
+    listEntries = []
+    header = []
+    for line in open(filename):
+        splits = line.split("\t")
+        if firstLine:
+            header = splits[0:4]
+            firstLine = False
+        else:
+            if int(splits[2]) > 0:
+                listEntries.append( (int(splits[2]), splits[0], splits[1][:33], splits[3]) )
+
+    listEntries.sort(reverse=True)
+    outBig.write('{:15}\t{:35}\t{:15}\t{:15}\n'.format(header[0], header[1],header[2], header[3])+"\n")
+
+    for entry in listEntries:
+        if entry[2] == 1921421:
+            print "debugging trap"
+        if entry[1] == -1 or entry[1] == "-1":
+            entry = (entry[0], "none", entry[2], entry[3])
+        if entry[2] == -1 or entry[2] == "-1":
+            entry = (entry[0], entry[1], "not found in DB", entry[3])
+        outBig.write(prettyEntry(entry))
+
+    return len(listEntries)
+
 def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPrefix=None, dotLimit=1.0):
     """Given a blast input file, reports the taxonomy lineage for the hits.  By default the report
     will be printed to standard output, but if an outputPrefix is given then output files, one each
@@ -550,7 +661,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
 
     # STEP 130: write gis table to file
     print >> sys.stderr, 'STEP 130: write gis table to file'
-    outGis = open(outputPrefix + "GIS_JWC.txt", "w")
+    outGis = open(outputPrefix + "GIS.txt", "w")
     for key in gis:
         outGis.write("%s\n" % (key))
     outGis.close()
@@ -589,7 +700,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
 
     # STEP 145: write Alignments to gi nubmers, which were not found
     print >> sys.stderr, 'STEP 145: write Alignments to gi numbers, which were not found'
-    findingUnknownAlignments( taxonomy, blastInput, outputPrefix + "unidentifiedTaxaAlignmentsJWC.txt")
+    findingUnknownAlignments( taxonomy, blastInput, outputPrefix + "unidentifiedTaxaAlignments.txt")
 
 
     # STEP 150: build taxID_to_lookup from taxonomy
@@ -611,7 +722,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
 
     # STEP 165: write names to file
     print >> sys.stderr, 'STEP 165: write names to file'
-    OPP = open(outputPrefix + "NAMES_JWC.txt", "w")
+    OPP = open(outputPrefix + "NAMES.txt", "w")
     for name in names:
         OPP.write("\n" + str(name) + "\n" + str(names[name]))
     OPP.close()
@@ -637,8 +748,8 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
     genusCount = {}
     familyCount = {}
 
-    missing = open(outputPrefix + "unresolved_giJWC.txt",'w')
-    uniqLog = open(outputPrefix + "uniqueAlignmentsJWC.txt",'w')
+    missing = open(outputPrefix + "unresolved_gi.txt",'w')
+    uniqLog = open(outputPrefix + "uniqueAlignments.txt",'w')
 
     #temporary list to store values looked up via eUtils
     lookups = {}
@@ -677,23 +788,25 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
             #taxaID = taxID
             if taxID in names:
                 fullTax = names[taxID]
-                (taxaID, speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                taxaID = taxID
+                (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
             elif taxID in lookups.keys():
                 #new condition: if I looked up and got a merged entry, I saved it and this looks it up
                 (taxID, fullTax) = lookups[taxID]
-                (taxaID, speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                taxaID = taxID
             else:
                 # attempt to lookup missing values
                 print >> sys.stderr, "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
-                print "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
+                #print "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
                 single =  eutilsWrapper.getTaxa( [taxID] )
                 if len(single)==1:
                     newTaxaID = single.keys()[0]
                     lookups[taxID] = (newTaxaID, single[newTaxaID])
                     print >> sys.stderr, "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
-                    print "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
+                    #print "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
                     fullTax = single[newTaxaID]
-                    (taxaID, speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                    (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
                 else:
                     print >> sys.stderr, "taxID %d was STILL not found in the NCBI lookup; it is being ignored" % taxID
                     missing.write("taxaID\t"+str(taxID)+"\n")
@@ -716,19 +829,25 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
     print >> sys.stderr, 'STEP 180: output taxa reports (LCA binning version)'
     print >> sys.stderr, '       : writing reports'
 
+    # 2016-12-08 need to save Kingdom information and pass forward
+    savedKingdom = dict()
+
     filename = outputPrefix + "firstTaxon.IMSA+A_4count.txt"
     outFile = open(filename, "w")
-    outFile.write( "%s\t%s\t%s\n" %
-                ("Taxa ID", "Scientific Name", "Clade Level\tTotal\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
+    outFile.write( "%s\t%s\t%s\t%s\t%s\n" %
+                ("Taxa ID", "Scientific Name", "IMSA+A count", "Kingdom","Total\tUnique clade hits\tPartial clade hits\tPartial clade sum"))
     KEYS=taxaCount.keys()
     KEYS.sort()
+    numFirstTaxon = 0
     for taxID in KEYS:
+        kingdom = 1
         if taxID == -1 or taxID == "-1":
             sname = -1
             count = taxaCount[taxID]
         elif taxID in taxaNames:    #if found in NCBI local database at systemSettings.PATH
             sname = taxaNames[taxID]
             count = taxaCount[taxID]
+            kingdom = findKingdom(taxID,taxaNodes)
         else:
             # debug 2016-01-15 added step to prevent unknown/merged record to taxa report
             print "*&*&* Calling eUtils with taxID: ", taxID
@@ -745,8 +864,16 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
                 taxID = ID
                 #print "*&*&* fullTax is ", single[ single.keys()[0] ]
                 print "*&*&* taxID is ", taxID
-                sname = taxaNames[ taxID ]
+                #sname = taxaNames[ taxID ]     #bug 12/06/2016
+                sname = single[ single.keys()[0] ].getSpecies().sname
                 print "*&*&* sname is ", sname
+                kingdom = findKingdom(single[ single.keys()[0] ].getPhylum().taxId, taxaNodes)
+                if single[single.keys()[0]].getSpecies():
+                    savedKingdom[single[ single.keys()[0]].getSpecies().taxId ] = kingdom
+                if single[single.keys()[0]].getGenus():
+                    savedKingdom[single[single.keys()[0]].getGenus().taxId] = kingdom
+                if single[single.keys()[0]].getFamily():
+                    savedKingdom[single[single.keys()[0]].getFamily().taxId] = kingdom
             else:
                 sname = -1
                 count = taxaCount[taxID]
@@ -755,90 +882,158 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
             level = taxaNodes[taxID][1]
         else:
             level = "unknown"
-        myLine = "%s\t%s\t%s\t%s\n" % (str(taxID), sname, level, catV(count))
+        #myLine = "%s\t%s\t%s\t%s\n" % (str(taxID), sname, level, catV(count))
+        myLine = "%s\t%s\t%s\t%s\t%s\n" % (str(taxID), sname, count[1], taxaNames[kingdom], catV(count))
+        if int(count[1]) > 0:
+            numFirstTaxon += 1
         outFile.write(myLine)
     outFile.close()
-
 
     filename = outputPrefix + "species.IMSA+A_4count.txt"
     outFile = open(filename, "w")
     filename2 = outputPrefix + "species.IMSA_count.txt"
     outFile2 = open(filename2, "w")
-    outFile.write( "%s\t%s\t%s\n" %
-                ("Species ID", "Scientific Name", "Total\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
-    outFile2.write( "%s\t%s\t%s\n" %
-                ("Species ID", "Scientific Name", "IMSA count") )
     KEYS=speciesCount.keys()
     KEYS.sort()
-    for taxID in KEYS:
-        if taxID == -1 or taxID == "-1":
-            sname = -1
-            #count = taxaCount[taxID]
-        elif taxID in taxaNames:
-            sname = taxaNames[taxID]
-        else:
-            sname = -1
-        count = speciesCount[taxID]
-        if (count[1] > 0):  #if unique count > 0
-            myLine = "%s\t%s\t%s\n" % (str(taxID), sname, catV(count))
-            outFile.write(myLine)
-        myLine = "%s\t%s\t%s\n" % (str(taxID), sname, str(count[0]))
-        outFile2.write(myLine)
+    fillOutCountFiles(KEYS, speciesCount, taxaNames, taxaNodes, outFile, outFile2, "Species", savedKingdom)
     outFile.close()
+    outFile2.close()
+
 
     filename = outputPrefix + "genus.IMSA+A_4count.txt"
     outFile = open(filename, "w")
     filename2 = outputPrefix + "genus.IMSA_count.txt"
     outFile2 = open(filename2, "w")
-    outFile.write( "%s\t%s\t%s\n" %
-                ("Genus ID", "Scientific Name", "Total\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
-    outFile2.write( "%s\t%s\t%s\n" %
-                ("Genus ID", "Scientific Name", "IMSA count") )
     KEYS=genusCount.keys()
     KEYS.sort()
-    for taxID in KEYS:
-        if taxID == -1 or taxID == "-1":
-            sname = -1
-            #count = taxaCount[taxID]
-        elif taxID in taxaNames:
-            sname = taxaNames[taxID]
-        else:
-            sname = -1
-        count = genusCount[taxID]
-        if (count[1] > 0):  #if unique count > 0
-            myLine = "%s\t%s\t%s\n" % (str(taxID), sname, catV(count))
-            outFile.write(myLine)
-        myLine = "%s\t%s\t%s\n" % (str(taxID), sname, str(count[0]))
-        outFile2.write(myLine)
+    fillOutCountFiles(KEYS, genusCount, taxaNames, taxaNodes, outFile, outFile2, "Genus", savedKingdom)
     outFile.close()
+    outFile2.close()
+
 
     filename = outputPrefix + "family.IMSA+A_4count.txt"
     outFile = open(filename, "w")
     filename2 = outputPrefix + "family.IMSA_count.txt"
     outFile2 = open(filename2, "w")
 
-    outFile.write( "%s\t%s\t%s\n" %
-                ("Family ID", "Scientific Name", "Total\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
-    outFile2.write( "%s\t%s\t%s\n" %
-                ("Family ID", "Scientific Name", "IMSA count") )
     KEYS=familyCount.keys()
     KEYS.sort()
-    for taxID in KEYS:
-        if taxID == -1 or taxID == "-1":
-            sname = -1
-            count = taxaCount[taxID]
-        elif taxID in taxaNames:
-            sname = taxaNames[taxID]
-        else:
-            sname = -1
-        count = familyCount[taxID]
-        if (count[1] > 0):  #if unique count > 0
-            myLine = "%s\t%s\t%s\n" % (str(taxID), sname, catV(count))
-            outFile.write(myLine)
-        myLine = "%s\t%s\t%s\n" % (str(taxID), sname, str(count[0]))
-        outFile2.write(myLine)
+
+    fillOutCountFiles(KEYS, familyCount, taxaNames, taxaNodes, outFile, outFile2, "Family", savedKingdom)
 
     outFile.close()
+    outFile2.close()
+
+
+    print >> sys.stderr, 'STEP 190: output human readable report'
+    # We can read the files we have written, sort, and spit back out with proper justification
+    # make a function ?
+    # we can check file size etc etc and look for errors
+    numberTaxa = dict()
+    outBig = open(outputPrefix + ".IMSA+A.HUMAN_READABLE_REPORT.txt","w")
+
+    numSpecies = 0
+    numGenus = 0
+    numFamily = 0
+    for key in speciesCount.keys():
+        if int(speciesCount[key][1]) > 0:
+            numSpecies += 1
+
+    for key in genusCount.keys():
+        if int(genusCount[key][1]) > 0:
+            numGenus += 1
+
+    for key in familyCount.keys():
+        if int(familyCount[key][1]) > 0:
+            numFamily += 1
+
+    outBig.write("IMSA+A metataxonomics report\n\nSUMMARY\n")
+    outBig.write("{:10}".format((str(numFirstTaxon)))+"Total unique lowest taxa identified\n")
+    outBig.write("{:10}".format(str(numSpecies)) + "Total unique Species identified\n")
+    outBig.write("{:10}".format(str(numGenus)) + "Total unique Genera identified\n")
+    outBig.write("{:10}".format(str(numFamily)) + "Total unique Families identified\n")
+    outBig.write("\nCONTENT\n")
+    outBig.write("Section A - List of identified lowest taxon (for Virus detection)\n")
+    outBig.write("Section B - List of identified species\n")
+    outBig.write("Section C - List of identified genera (recommended)\n")
+    outBig.write("Section D - List of identified families\n")
+    outBig.write("Section E - Errors from analysis requiring human intervention\n")
+    outBig.write("Section F - List of output files and their brief description\n")
+
+    outBig.write("\nSection A\n\n")
+    outBig.write("Taxon at the lowest clade associated with the reference sequence.\n"+
+                 "This report is most useful for detecting viruses, which can be omitted in other reports.\n")
+    numberTaxa["firstTaxon"] = processOutputFileHumanReadable( outBig, outputPrefix + "firstTaxon.IMSA+A_4count.txt" )
+
+    outBig.write("\nSection B\n\n")
+    outBig.write("List of identified species.\n\n")
+    numberTaxa["species"] = processOutputFileHumanReadable( outBig, outputPrefix + "species.IMSA+A_4count.txt" )
+
+
+    outBig.write("\nSection C\n\n")
+    outBig.write("List of identified genera.\n\n")
+    numberTaxa["genus"] = processOutputFileHumanReadable( outBig, outputPrefix + "genus.IMSA+A_4count.txt" )
+
+    outBig.write("\nSection D\n\n")
+    outBig.write("List of identified families.\nThis report can be useful when the sequenced organism(s) in the sample is not in the reference database.\n")
+    outBig.write("Reviewing results at higher clade levels may prevent the identification of many closely related organisms.\n\n")
+    numberTaxa["family"] = processOutputFileHumanReadable(outBig, outputPrefix + "family.IMSA+A_4count.txt")
+
+    # outBig.write("\n\nNumber of taxa found by clade\n")
+    # clades = ["firstTaxon","species","genus","family"]
+    #
+    # for key in clades:
+    #     outBig.write("{:15}".format(numberTaxa[key])+ " " + key + "\n")
+
+
+    outBig.write("\nSection E\n\nErrors from analysis requiring human intervention\n\n")
+    f = open(outputPrefix + "unidentifiedTaxaAlignments.txt")
+    data = f.read()
+    f.close()
+    outBig.write("Sequence alignment conversion to taxa:\n")
+    if len(data) != 0:
+        outBig.write("WARNING!\n"+
+                     "There were reference sequences which could not be converted to taxa.\n\n"+
+                     outputPrefix + "unidentifiedTaxaAlignments.txt" + " file contains blast alignments to reference sequence names.\n\n"+
+                     "These names must be manually looked up, input into appropriate files, and then the program re-run.\n"+
+                     "Please refer to documentation for detailed instructions to resolve this error, section 'Additional Output file'.\n\n")
+    else:
+        outBig.write("SUCCESSFUL\n\n")
+
+    outBig.write("Reference sequence names conversion to taxa:\n")
+    f = open(outputPrefix + "unresolved_gi.txt")
+    data = f.read()
+    f.close()
+
+    if len(data) != 0:
+        outBig.write("WARNING!\n"+
+                     "There were reference sequence GI numbers which could not be converted to taxa.\n\n" +
+                     outputPrefix + "unresolved_gi.txt"+ " contains a list of GI numbers.\n\n"+
+                     "These need to be manually looked up, input, and then process re-run\n"+
+                     "Please refer to documentation for detailed instructions to resolve this error, section 'Additional Output file'.\n")
+    else:
+        outBig.write("SUCCESSFUL\n")
+
+
+    outBig.write("\nSection F\n\n")
+    outBig.write("\nList of output files and their brief description:\n")
+    outBig.write("\t" + outputPrefix +          "species.IMSA_count.txt - Original IMSA report" + "\n")
+    outBig.write("\t" + outputPrefix +          "genus.IMSA_count.txt   - Original IMSA report" + "\n")
+    outBig.write("\t" + outputPrefix +          "family.IMSA_count.txt  - Original IMSA report"+"\n")
+    outBig.write("\t" + outputPrefix +          "firstTaxon.IMSA+A_4count.txt - IMSA+A detailed counts; use for further analysis" + "\n")
+    outBig.write("\t" + outputPrefix +          "species.IMSA+A_4count.txt    - IMSA+A detailed counts; use for further analysis" + "\n")
+    outBig.write("\t" + outputPrefix +          "genus.IMSA+A_4count.txt      - IMSA+A detailed counts; use for further analysis" + "\n")
+    outBig.write("\t" + outputPrefix +          "family.IMSA+A_4count.txt     - IMSA+A detailed counts; use for further analysis" + "\n")
+    outBig.write("\t" + outputPrefix +          "NAMES.txt         - list of taxonomies with names looked up via NCBI" + "\n")
+    outBig.write("\t" + outputPrefix +          "GIS.txt           - list of GI numbers (or other sequence names) found" + "\n")
+    outBig.write("\t" + outputPrefix +          "uniqueAlignments.txt           - query names resulting in unique hits across all clades and corresponding Taxon ID" + "\n")
+    outBig.write("\t" + outputPrefix +          "unidentifiedTaxaAlignments.txt - serious errors where reference sequence could not be converted to a taxon ID recorded here" + "\n")
+    outBig.write("\t" + outputPrefix +          "unresolved_gi.txt              - serious errors where reference sequence could not be converted to a taxon ID recorded here" + "\n")
+    outBig.write("\t" + outputPrefix[:-4] + "taxonomy.pickle       - intermediate python binary file.  Delete if your blast alignments change." + "\n")
+    outBig.write("\t" + outputPrefix[:-4] + "bestHits.bln          - intermediate blast alignments, which are used for final counts.  Delete if your blast alignments change." + "\n")
+    outBig.write("\t" + outputPrefix[:-4] + "bestHits.bln.pickle   - intermediate python binary file.  Delete if your blast alignments change." + "\n")
+
+    outBig.close()
 
 # original IMSA code modified to handle 4-tuple
 def readBlastIntoTargetDictJWC(blastInput, keepQueries=False):
@@ -853,7 +1048,7 @@ def readBlastIntoTargetDictJWC(blastInput, keepQueries=False):
     for line in open(blastInput):
         k+=1
         if k%100000 == 0:
-            print >> sys.stderr, "Processing ", float(k)/1000000, " million"Di
+            print >> sys.stderr, "Processing ", float(k)/1000000, " million"
         pieces = line.split()
         if len(pieces) < 12 or len(pieces) > 13:
             print "Ignoring line, it has %s pieces:" % len(pieces)
