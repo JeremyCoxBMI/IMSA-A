@@ -32,13 +32,13 @@ NODES_BLAST_TAX_DB = PATH+"nodes.dmp"
 # Add to this tab-delimited file lines matching the format of the BLAST_TAX_DB file:
 # 2 columns: GI number, taxonID
 # ACTION ITEM: you need to create an empty file until there is data to put in this file
-EXTRA_BLAST_TAX_DB = PATH+"extra_JWC_gi_taxid_nucl.dmp"             #note, you may need to create an empty file
+EXTRA_BLAST_TAX_DB = PATH+"extra_gi_taxid_nucl.dmp"             #note, you may need to create an empty file
 
 #ACCESSION number based alignments database (new)
 ACC_PATH="/mnt/Dshare/acc_taxid/"
 ACC_BLAST_TAX_DB = ACC_PATH+"nucl_gb.accession2taxid"
-ACC_NAMES_BLAST_TAX_DB = ACC_PATH+"names.dmp"
-ACC_NODES_BLAST_TAX_DB = ACC_PATH+"nodes.dmp"
+ACC_NAMES_BLAST_TAX_DB = PATH+"names.dmp"
+ACC_NODES_BLAST_TAX_DB = PATH+"nodes.dmp"
 
 # This file allows you to manually define Accesion numbers to Taxon ID conversion, if it somehow was left out of
 # the database dump, and ISMA then throws an error.
@@ -46,7 +46,7 @@ ACC_NODES_BLAST_TAX_DB = ACC_PATH+"nodes.dmp"
 # 4 columns: Accession Number, Accession.Version, taxonID, GI number
 # Note the GI number can be a blank column, but the column needs to be present in the file
 # ACTION ITEM: you need to create an empty file until there is data to put in this file
-ACC_EXTRA_BLAST_TAX_DB = ACC_PATH+"extra_JWC_acc_taxid_nucl.dmp"
+ACC_EXTRA_BLAST_TAX_DB = ACC_PATH+"extra_acc_taxid_nucl.dmp"
 
 # custom database index; augments lookup capability to include select genomes from fungiDB
 # this file establishes taxonomy lookup
