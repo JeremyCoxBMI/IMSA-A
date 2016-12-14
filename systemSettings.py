@@ -54,6 +54,11 @@ ACC_EXTRA_BLAST_TAX_DB = ACC_PATH+"extra_acc_taxid_nucl.dmp"
 # 2 columns: sequenceName, taxon ID
 fungiLookupFile = "/home/osboxes/imsa.develop/imsa-a/fungiDB.seqNames.2.speciesID"
 
+# For running nuccore utilities, eDirect must be installed
+# https://www.ncbi.nlm.nih.gov/books/NBK179288/
+# ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip
+efetchPath="~/EDirect/edirect/efetch"
+
 def buildNames():
     inFile = open(NAMES_BLAST_TAX_DB)
 
