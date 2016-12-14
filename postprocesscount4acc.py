@@ -57,6 +57,8 @@ Required Inputs:
 Optional Inputs:
     -f    this option is deprecated for IMSA+A 4 count.  (It may still function)
           This program now outputs file with extension .firstTaxon.IMSA+A_4count.txt for better virus classification.
+
+REQUIRES PYTHON 2.7
 """
 
 
