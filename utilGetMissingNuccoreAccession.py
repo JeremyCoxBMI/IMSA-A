@@ -7,8 +7,11 @@ import sys
 
 from systemSettings import *
 
+from utilUniqueAccCount import parseAccession
 
-command = '''/data/aplab/cox1kb/EDirect/edirect/efetch -db nuccore -id "XXX" -mode xml > test.out'''
+#https://www.ncbi.nlm.nih.gov/books/NBK179288/
+#defined in systemSettings.py
+command = efetchPath+''' -db nuccore -id "XXX" -mode xml > test.out'''
 
 def extractTaxa( aLine ):
   right = aLine.split(">")[1]
@@ -33,7 +36,8 @@ if __name__== "__main__":
   gis = {}
   for line in inf:
     splits = line.split()
-    gid=splits[1].split("|")[1]
+    #gid=splits[1].split("|")[1]
+    gid = parseAccession(splits[1])
     gis[gid]=1
 
   print "there are %d unique Accession Numbers" % len(gis.keys())

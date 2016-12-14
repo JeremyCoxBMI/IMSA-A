@@ -7,8 +7,10 @@ import sys
 
 from systemSettings import *
 
+#https://www.ncbi.nlm.nih.gov/books/NBK179288/
+#defined in systemSettings.py
+command = efetchPath+''' -db nuccore -id "XXX" -mode xml > test.out'''
 
-command = '''/data/aplab/cox1kb/EDirect/edirect/efetch -db nuccore -id "XXX" -mode xml > test.out'''
 
 def extractTaxa( aLine ):
   right = aLine.split(">")[1]

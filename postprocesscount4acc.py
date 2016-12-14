@@ -318,7 +318,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
                     taxonomy[acc] = int(taxid)
             print >> sys.stderr, '       :       : searching %s' % ACC_EXTRA_BLAST_TAX_DB
             for line in open(ACC_EXTRA_BLAST_TAX_DB):
-                (acc, accv, taxid, gi) = line.split()
+                (acc, accv, taxid, gi) = line.split('\t')
                 if accs.has_key(acc):
                     taxonomy[acc] = int(taxid)
 
