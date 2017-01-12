@@ -50,7 +50,7 @@ def main(argv=None):
     write = False
     for line in open(argv[2]):
         if line[0] == ">":
-            short = line[1:].strip()
+            short = line[1:].strip().split()[0]  #inchworm compatible
             if short in listQueryKeep:
                 write = True
                 line = ">"+short+" "+clade+":taxonID:"+listQueryKeep[short]+"\n"
