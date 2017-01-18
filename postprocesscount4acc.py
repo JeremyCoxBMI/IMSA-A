@@ -148,7 +148,7 @@ def parseAccession(text, fungiLookup):
         acc = "0"
     elif text[0] == "g" and text[1] == "i":  ##old school format
         for i in text.split("|"):
-            if i == "ref":
+            if i == "ref" or i == "gb":     #2017-01-18 apparently, some DB use "gb" for "ref"
                 acc = text.split("|")[j + 1].split(".")[0]  # exclude .suffix
 
                 break
