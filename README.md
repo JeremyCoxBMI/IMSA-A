@@ -14,3 +14,5 @@ The hand off to accession.version should be relatively painless and require very
 ## 12/2016 update
 A new script "postprocesscount4acc.py" allows use of accession number data.
 New options in systemSettings.py, start with "ACC_" to point to a new accession version to taxon database.
+## 02/2017 update
+We found a bug in IMSA paired end processing.  We are working to correct and will release soon.
