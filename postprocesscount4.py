@@ -851,7 +851,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
         else:
             # debug 2016-01-15 added step to prevent unknown/merged record to taxa report
             print "*&*&* Calling eUtils with taxID: ", taxID
-            single =  eutilsWrapper.getTaxa( [taxID] )
+            single = eutilsWrapper.getTaxa( [taxID] )
             print "*&*&* result of eUtils : ", single
             print "*&*&* result of eUtils single[0] : ", single[ single.keys()[0] ]
             if len(single)==1:
