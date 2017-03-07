@@ -389,7 +389,10 @@ def processHitList(taxaCount, speciesCount, genusCount, familyCount, hitList, cu
     :return:
     """
 
-    if len(hitList) == 1: #unique hit
+    if len(hitList) == 0:
+        #do nothing
+        abc=1
+    elif len(hitList) == 1: #unique hit
         result = (1,1,0,0)
 
         taxaID = hitList[0][0]
