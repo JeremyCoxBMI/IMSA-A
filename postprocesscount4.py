@@ -823,6 +823,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
         #end if gi == 0:
         hitList.append( (taxaID, speciesID, genusID, familyID) )
     #end for
+    processHitList(taxaCount, speciesCount, genusCount, familyCount, hitList, currQuery, uniqLog)
     missing.close()
 
     # STEP 180: output taxa reports (LCA binning version)
