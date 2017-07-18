@@ -41,7 +41,7 @@ BLAST_DB_ABBREV = {"nt":"nt", "human":"hg",
 
 # The PATH_TO variables are what you would type on the command line to run the following programs.
 # If the programs have been installed in your path, you'll just need the program name, as shown below.
-# Example:  "/usr/bin/bowtie/bowtie"
+# Example:  PATH_TO_BOWTIE = "/usr/bin/bowtie/bowtie"
 PATH_TO_BOWTIE = "bowtie"
 PATH_TO_BOWTIE2 = "bowtie2"
 PATH_TO_BLASTN = "blastn"
