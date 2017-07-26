@@ -1,0 +1,208 @@
+IMSA+A metataxonomics report
+
+SUMMARY
+35        Total unique lowest taxa identified
+38        Total unique Species identified
+35        Total unique Genera identified
+25        Total unique Families identified
+
+CONTENT
+Section A - List of identified lowest taxon (for Virus detection)
+Section B - List of identified species
+Section C - List of identified genera (recommended)
+Section D - List of identified families
+Section E - Errors from analysis requiring human intervention
+Section F - List of output files and their brief description
+
+Section A
+
+Taxon at the lowest clade associated with the reference sequence.
+This report is most useful for detecting viruses, which can be omitted in other reports.
+Taxa ID        	Scientific Name                    	IMSA+A count   	Kingdom        
+
+42068          	Pneumocystis jirovecii             	824            	Fungi          
+1071378        	Naumovozyma dairenensis CBS 421    	137            	Fungi          
+559295         	Lachancea thermotolerans CBS 6340  	118            	Fungi          
+389469         	Pseudomonas phage DMS3             	108            	Viruses        
+284590         	Kluyveromyces lactis NRRL Y-1140   	102            	Fungi          
+1064592        	Naumovozyma castellii CBS 4309     	99             	Fungi          
+284593         	Candida glabrata CBS 138           	94             	Fungi          
+1403316        	Mycoplasma parvum str. Indiana     	78             	Bacteria       
+1262523        	Leuconostoc phage phiLNTR2         	52             	Viruses        
+5180           	Sclerotinia sclerotiorum           	47             	Fungi          
+5507           	Fusarium oxysporum                 	45             	Fungi          
+563119         	Mycobacterium phage Fruitloop      	44             	Viruses        
+1423892        	Ehrlichia muris AS145              	32             	Bacteria       
+642478         	Lettuce chlorosis virus            	17             	Viruses        
+402612         	Flavobacterium psychrophilum JIP0  	14             	Bacteria       
+425011         	Aspergillus niger CBS 513.88       	12             	Fungi          
+573729         	Myceliophthora thermophila ATCC 4  	9              	Fungi          
+36630          	Neosartorya fischeri               	9              	Fungi          
+36427          	Rotavirus C                        	8              	Viruses        
+471285         	Lettuce yellow mottle virus        	7              	Viruses        
+1382295        	Inachis io cypovirus 2             	7              	Viruses        
+323261         	Nitrosococcus oceani ATCC 19707    	5              	Bacteria       
+178354         	Taro bacilliform virus             	5              	Viruses        
+515635         	Dictyoglomus turgidum DSM 6724     	4              	Bacteria       
+490899         	Desulfurococcus kamchatkensis 122  	3              	Archaea        
+1110509        	Methanosaeta harundinacea 6Ac      	3              	Archaea        
+60480          	Shewanella sp. MR-4                	2              	Bacteria       
+413404         	Candidatus Ruthia magnifica str.   	2              	Bacteria       
+907947         	Phytopythium vexans                	1              	Eukaryota      
+572480         	Arcobacter nitrofigilis DSM 7299   	1              	Bacteria       
+491915         	Anoxybacillus flavithermus WK1     	1              	Bacteria       
+377629         	Teredinibacter turnerae T7901      	1              	Bacteria       
+290434         	Borreliella bavariensis PBi        	1              	Bacteria       
+151534         	Lactococcus phage bIL311           	1              	Viruses        
+1071382        	Kazachstania africana CBS 2517     	1              	Fungi          
+
+Section B
+
+List of identified species.
+
+Species ID     	Scientific Name                    	IMSA+A count   	Kingdom        
+
+42068          	Pneumocystis jirovecii             	824            	Fungi          
+27289          	Naumovozyma dairenensis            	137            	Fungi          
+4932           	Saccharomyces cerevisiae           	128            	Fungi          
+381046         	Lachancea thermotolerans           	118            	Fungi          
+389469         	Pseudomonas phage DMS3             	108            	Viruses        
+28985          	Kluyveromyces lactis               	102            	Fungi          
+27288          	Naumovozyma castellii              	99             	Fungi          
+5478           	Candida glabrata                   	94             	Fungi          
+984991         	Mycoplasma parvum                  	78             	Bacteria       
+1262523        	Leuconostoc phage phiLNTR2         	52             	Viruses        
+5180           	Sclerotinia sclerotiorum           	47             	Fungi          
+5507           	Fusarium oxysporum                 	45             	Fungi          
+563119         	Mycobacterium phage Fruitloop      	44             	Viruses        
+35795          	Ehrlichia muris                    	32             	Bacteria       
+642478         	Lettuce chlorosis virus            	17             	Viruses        
+96345          	Flavobacterium psychrophilum       	14             	Bacteria       
+5061           	Aspergillus niger                  	12             	Fungi          
+55601          	Vibrio anguillarum                 	10             	Bacteria       
+78579          	Myceliophthora thermophila         	9              	Fungi          
+36630          	Neosartorya fischeri               	9              	Fungi          
+36427          	Rotavirus C                        	8              	Viruses        
+205896         	Cypovirus 2                        	7              	Viruses        
+1985703        	not found in DB                    	7              	root           
+178354         	Taro bacilliform virus             	5              	Viruses        
+1229           	Nitrosococcus oceani               	5              	Bacteria       
+513050         	Dictyoglomus turgidum              	4              	Bacteria       
+94694          	Desulfurococcus amylolyticus       	3              	Archaea        
+301375         	Methanosaeta harundinacea          	3              	Archaea        
+60480          	Shewanella sp. MR-4                	2              	Bacteria       
+386487         	Candidatus Ruthia magnifica        	2              	Bacteria       
+29519          	Borreliella garinii                	2              	Bacteria       
+907947         	Phytopythium vexans                	1              	Eukaryota      
+664662         	Borreliella bavariensis            	1              	Bacteria       
+432096         	Kazachstania africana              	1              	Fungi          
+33934          	Anoxybacillus flavithermus         	1              	Bacteria       
+28199          	Arcobacter nitrofigilis            	1              	Bacteria       
+2426           	Teredinibacter turnerae            	1              	Bacteria       
+151534         	Lactococcus phage bIL311           	1              	Viruses        
+
+Section C
+
+List of identified genera.
+
+Genus ID       	Scientific Name                    	IMSA+A count   	Kingdom        
+
+4753           	Pneumocystis                       	824            	Fungi          
+278028         	Naumovozyma                        	236            	Fungi          
+4930           	Saccharomyces                      	128            	Fungi          
+none           	not found in DB                    	122            	root           
+300275         	Lachancea                          	118            	Fungi          
+1623286        	D3112likevirus                     	115            	Viruses        
+4910           	Kluyveromyces                      	102            	Fungi          
+374468         	Nakaseomyces                       	94             	Fungi          
+2093           	Mycoplasma                         	78             	Bacteria       
+1623281        	Che8likevirus                      	57             	Viruses        
+5179           	Sclerotinia                        	47             	Fungi          
+5506           	Fusarium                           	45             	Fungi          
+943            	Ehrlichia                          	32             	Bacteria       
+5052           	Aspergillus                        	22             	Fungi          
+129337         	Geobacillus                        	22             	Bacteria       
+67753          	Crinivirus                         	17             	Viruses        
+237            	Flavobacterium                     	14             	Bacteria       
+662            	Vibrio                             	10             	Bacteria       
+1920207        	not found in DB                    	9              	root           
+10912          	Rotavirus                          	8              	Viruses        
+11305          	Cytorhabdovirus                    	7              	Viruses        
+10981          	Cypovirus                          	7              	Viruses        
+1227           	Nitrosococcus                      	5              	Bacteria       
+10652          	Badnavirus                         	5              	Viruses        
+64895          	Borreliella                        	4              	Bacteria       
+13             	Dictyoglomus                       	4              	Bacteria       
+2273           	Desulfurococcus                    	3              	Archaea        
+2222           	Methanosaeta                       	3              	Archaea        
+22             	Shewanella                         	2              	Bacteria       
+1541743        	Candidatus Ruthia                  	2              	Bacteria       
+795339         	Phytopythium                       	1              	Eukaryota      
+71245          	Kazachstania                       	1              	Fungi          
+28196          	Arcobacter                         	1              	Bacteria       
+2425           	Teredinibacter                     	1              	Bacteria       
+150247         	Anoxybacillus                      	1              	Bacteria       
+
+Section D
+
+List of identified families.
+This report can be useful when the sequenced organism(s) in the sample is not in the reference database.
+Reviewing results at higher clade levels may prevent the identification of many closely related organisms.
+
+Family ID      	Scientific Name                    	IMSA+A count   	Kingdom        
+
+44281          	Pneumocystidaceae                  	824            	Fungi          
+4893           	Saccharomycetaceae                 	688            	Fungi          
+10699          	Siphoviridae                       	359            	Viruses        
+2092           	Mycoplasmataceae                   	78             	Bacteria       
+28983          	Sclerotiniaceae                    	47             	Fungi          
+110618         	Nectriaceae                        	45             	Fungi          
+942            	Anaplasmataceae                    	32             	Bacteria       
+186817         	Bacillaceae                        	23             	Bacteria       
+1131492        	Aspergillaceae                     	22             	Fungi          
+69973          	Closteroviridae                    	17             	Viruses        
+10880          	Reoviridae                         	15             	Viruses        
+49546          	Flavobacteriaceae                  	14             	Bacteria       
+641            	Vibrionaceae                       	10             	Bacteria       
+35718          	Chaetomiaceae                      	9              	Fungi          
+11270          	Rhabdoviridae                      	7              	Viruses        
+186534         	Caulimoviridae                     	5              	Viruses        
+1046           	Chromatiaceae                      	5              	Bacteria       
+203488         	Dictyoglomaceae                    	4              	Bacteria       
+1643685        	Borreliaceae                       	4              	Bacteria       
+2272           	Desulfurococcaceae                 	3              	Archaea        
+143067         	Methanosaetaceae                   	3              	Archaea        
+none           	not found in DB                    	3              	root           
+267890         	Shewanellaceae                     	2              	Bacteria       
+72294          	Campylobacteraceae                 	1              	Bacteria       
+1706371        	Cellvibrionaceae                   	1              	Bacteria       
+
+Section E
+
+Errors from analysis requiring human intervention
+
+Sequence alignment conversion to taxa:
+SUCCESSFUL
+
+Reference sequence names conversion to taxa:
+SUCCESSFUL
+
+Section F
+
+
+List of output files and their brief description:
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_species.IMSA_count.txt - Original IMSA report
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_genus.IMSA_count.txt   - Original IMSA report
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_family.IMSA_count.txt  - Original IMSA report
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_firstTaxon.IMSA+A_4count.txt - IMSA+A detailed counts; use for further analysis
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_species.IMSA+A_4count.txt    - IMSA+A detailed counts; use for further analysis
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_genus.IMSA+A_4count.txt      - IMSA+A detailed counts; use for further analysis
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_family.IMSA+A_4count.txt     - IMSA+A detailed counts; use for further analysis
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_NAMES.txt         - list of taxonomies with names looked up via NCBI
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_GIS.txt           - list of GI numbers (or other sequence names) found
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_uniqueAlignments.txt           - query names resulting in unique hits across all clades and corresponding Taxon ID
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_unidentifiedTaxaAlignments.txt - serious errors where reference sequence could not be converted to a taxon ID recorded here
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.tax_unresolved_gi.txt              - serious errors where reference sequence could not be converted to a taxon ID recorded here
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.taxonomy.pickle       - intermediate python binary file.  Delete if your blast alignments change.
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.bestHits.bln          - intermediate blast alignments, which are used for final counts.  Delete if your blast alignments change.
+	lbc_bmus_n5_lmus_smus_smus_sub_assemble.fa.bestHits.bln.pickle   - intermediate python binary file.  Delete if your blast alignments change.
