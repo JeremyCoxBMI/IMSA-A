@@ -465,7 +465,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
     filename = outputPrefix + "firstTaxon.IMSA+A_4count.txt"
     outFile = open(filename, "w")
     outFile.write( "%s\t%s\t%s\n" %
-                ("Taxa ID", "Scientific Name", "Clade Level\tTotal\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
+                ("Taxa ID", "Scientific Name", "IMSA+A count\tKingdom\tUnique clade hits\tPartial clade hits\tPartial clade sum") )
     KEYS=taxaCount.keys()
     KEYS.sort()
     numFirstTaxon = 0
