@@ -4,7 +4,8 @@ IMSA+A is an extension of Arron-IMSA program for metagenomic taxonomic classific
 IMSA+A should be installed into it's own directory, independent of IMSA.
 See Detailed Directions.
 ## July 2017 Update
-
+* Expanded tips and tricks in directions
+* Include example results to validate pipeline
 ## December 2016 update
 * Starting with DEC 2016 update, IMSA code is distributed with IMSA+A.
 * Very minor updates for compatability are included; said changes are documented with comments.
