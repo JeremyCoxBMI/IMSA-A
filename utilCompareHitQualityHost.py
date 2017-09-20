@@ -202,110 +202,124 @@ if __name__ == "__main__":
 
     for line in open(blastInput, "r"):
         #loop control
-        splits = line.split()
+        splits = line.split('\t')
 
         #what about excluding human?
         #print unique[splits[0]]
         #print splits[1]
 
-        lookup = True
-        #TODO this means winner
-        if splits[0] in unique and unique[splits[0]] != 9606 and unique[splits[0]] != 40674:  #filters human?  need parameteR?
-            lookup = False
 
-        if lookup:
-            #analysis of line - do every time, even if find end
-            k = splits[1]
-            acc = parseAccession(k, fungiLookup)
 
-            fullTax = 0
-            if acc == "0" and k in fungiLookup:  #gi not found, cuz new fungiDB reference sequence name
+
+        #Need a filter to not lookup human sequences
+        # if splits[0] in unique and unique[splits[0]] != 9606 and unique[splits[0]] != 40674:  #filters human?  need parameteR?
+        #     lookup = False
+        # human = False
+        # #Identify species
+        # if human:
+        #     speciesID = 40674
+        #     speciesName = "Mammal"
+        # else:
+        #analysis of line - do every time, even if find end
+        k = splits[1]
+        acc = parseAccession(k, fungiLookup)
+
+        fullTax = 0
+        if acc == "0" and k in fungiLookup:  #gi not found, cuz new fungiDB reference sequence name
+            speciesID = fungiLookup[k]
+            if not speciesID == 40674:
                 (taxaID, speciesID, genusID, familyID) = lookupFungi( k, fungiLookup, names)
-            elif acc in taxonomy:  #2015-07-24
-                taxID = taxonomy[acc]
-                #taxaID = taxID
-                if taxID in names:
-                    fullTax = names[taxID]
-                    taxaID = taxID
-                    (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
-                elif taxID in lookups.keys():
-                    #new condition: if I looked up and got a merged entry, I saved it and this looks it up
-                    (taxID, fullTax) = lookups[taxID]
-                    (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
-                    taxaID = taxID
-                else:
-                    # attempt to lookup missing values
-                    print >> sys.stderr, "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
-                    #print "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
-                    single =  eutilsWrapper.getTaxa( [taxID] )
-                    if len(single)==1:
-                        newTaxaID = single.keys()[0]
-                        lookups[taxID] = (newTaxaID, single[newTaxaID])
-                        print >> sys.stderr, "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
-                        #print "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
-                        fullTax = single[newTaxaID]
-                        (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
-                    else:
-                        print >> sys.stderr, "taxID %d was STILL not found in the NCBI lookup; it is being ignored" % taxID
-                        #missing.write("taxaID\t"+str(taxID)+"\n")
-                        taxaID = -1
-                        speciesID = -1
-                        genusID = -1
-                        familyID = -1
-                        #fullTax = 0   #using default
+        elif acc in taxonomy:  #2015-07-24
+            taxID = taxonomy[acc]
+            #taxaID = taxID
+            if taxID in names:
+                fullTax = names[taxID]
+                taxaID = taxID
+                (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+            elif taxID in lookups.keys():
+                #new condition: if I looked up and got a merged entry, I saved it and this looks it up
+                (taxID, fullTax) = lookups[taxID]
+                (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                taxaID = taxID
             else:
-                print "not in taxonomy DB\t"+line
-                taxaID = -1
-                speciesID = -1
-                genusID = -1
-                familyID = -1
-                #fullTax = 0    #using default
+                # attempt to lookup missing values
+                print >> sys.stderr, "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
+                #print "taxID %d was not found in the NCBI lookup; it is being looked up again, possible merged record" % taxID
+                single =  eutilsWrapper.getTaxa( [taxID] )
+                if len(single)==1:
+                    newTaxaID = single.keys()[0]
+                    lookups[taxID] = (newTaxaID, single[newTaxaID])
+                    print >> sys.stderr, "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
+                    #print "taxID %d was found in the NCBI lookup as taxID %d" % (taxID, int(newTaxaID))
+                    fullTax = single[newTaxaID]
+                    (speciesID, genusID, familyID) = fullTax2IDS( fullTax )
+                else:
+                    print >> sys.stderr, "taxID %d was STILL not found in the NCBI lookup; it is being ignored" % taxID
+                    #missing.write("taxaID\t"+str(taxID)+"\n")
+                    taxaID = -1
+                    speciesID = -1
+                    genusID = -1
+                    familyID = -1
+                    #fullTax = 0   #using default
+        else:
+            print "not in taxonomy DB\t"+line
+            taxaID = -1
+            speciesID = -1
+            genusID = -1
+            familyID = -1
+            #fullTax = 0    #using default
 
-            queryList = query_to_results[ splits[0] ]
-            mytuple = ()
-            for x in range(len(queryList)):
-                if splits[1] == queryList[x][1]: #reference name matches
-                    mytuple = copy.deepcopy(queryList[x])
-                    #queryList.remove(x)  #guarantees same reference sequence scores not reported for multiple hits
-                    del queryList[x]
-                    break
 
-            if not fullTax == 0:
-                speciesName = fullTax.getSpecies().sname
+
+        if not fullTax == 0:
+            speciesName = fullTax.getSpecies().sname
+        else:
+            # if speciesID == 40674:
+            #     speciesName = "mammal"
+            if speciesID in names:
+                speciesName = names[speciesID]
             else:
                 speciesName = "not found"
 
-            #(query, ref, aligned_len, length, pident, true_pident) = mytuple
-            (query, ref, aligned_len, length, pident, true_pident, query_start, query_end,ref_start,ref_end, bitscore) = mytuple
-            true_pident = int(100*true_pident)
+        queryList = query_to_results[ splits[0] ]
+        mytuple = ()
+        for x in range(len(queryList)):
+            if splits[1] == queryList[x][1]: #reference name matches
+                mytuple = copy.deepcopy(queryList[x])
+                #queryList.remove(x)  #guarantees same reference sequence scores not reported for multiple hits
+                del queryList[x]
+                break
+        #(query, ref, aligned_len, length, pident, true_pident) = mytuple
+        (query, ref, aligned_len, length, pident, true_pident, query_start, query_end,ref_start,ref_end, bitscore) = mytuple
+        true_pident = int(100*true_pident)
 
-            if splits[0] in unique:  #winner
-                outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
-                           str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
-                           str(ref_end), str(bitscore)+"\t*"]
-                print "\t".join(outSet)
-            else:
-                outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
-                           str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
-                           str(ref_end), str(bitscore)]
-                print "\t".join(outSet)
-        #else:
-            #print all sequences?
+        if splits[0] in unique:  #winner
+            outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
+                       str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
+                       str(ref_end), str(bitscore)+"\t*"]
+            print "\t".join(outSet)
         else:
-            queryList = query_to_results[ splits[0] ]
-            mytuple = ()
-            for x in range(len(queryList)):
-                if splits[1] == queryList[x][1]: #reference name matches
-                    mytuple = copy.deepcopy(queryList[x])
-                    #queryList.remove(x)  #guarantees same reference sequence scores not reported for multiple hits
-                    del queryList[x]
-                    break
-            (query, ref, aligned_len, length, pident, true_pident, query_start, query_end,ref_start,ref_end, bitscore) = mytuple
-            true_pident = int(100*true_pident)
-            outSet = [ splits[0], splits[1], str(9606), "human", str(aligned_len), str(length), str(pident),
+            outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
                        str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
                        str(ref_end), str(bitscore)]
             print "\t".join(outSet)
+        #else:
+            #print all sequences?
+        # else:
+        #     queryList = query_to_results[ splits[0] ]
+        #     mytuple = ()
+        #     for x in range(len(queryList)):
+        #         if splits[1] == queryList[x][1]: #reference name matches
+        #             mytuple = copy.deepcopy(queryList[x])
+        #             #queryList.remove(x)  #guarantees same reference sequence scores not reported for multiple hits
+        #             del queryList[x]
+        #             break
+        #     (query, ref, aligned_len, length, pident, true_pident, query_start, query_end,ref_start,ref_end, bitscore) = mytuple
+        #     true_pident = int(100*true_pident)
+        #     outSet = [ splits[0], splits[1], str(9606), "human", str(aligned_len), str(length), str(pident),
+        #                str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
+        #                str(ref_end), str(bitscore)]
+        #     print "\t".join(outSet)
             # if splits[0] in unique:  #by if statement above, mammal or human
             #     outSet = [ splits[0], splits[1], str(9606), "human", str(aligned_len), str(length), str(pident),
             #            str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
