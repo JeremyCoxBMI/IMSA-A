@@ -227,8 +227,8 @@ if __name__ == "__main__":
         fullTax = 0
         if acc == "0" and k in fungiLookup:  #gi not found, cuz new fungiDB reference sequence name
             speciesID = fungiLookup[k]
-            if not speciesID == 40674:
-                (taxaID, speciesID, genusID, familyID) = lookupFungi( k, fungiLookup, names)
+            # if not speciesID == 40674:
+            #     (taxaID, speciesID, genusID, familyID) = lookupFungi( k, fungiLookup, names)
         elif acc in taxonomy:  #2015-07-24
             taxID = taxonomy[acc]
             #taxaID = taxID

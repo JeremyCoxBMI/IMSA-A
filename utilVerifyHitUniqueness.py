@@ -41,7 +41,13 @@ def printResults(dict_host, dict_organisms):
             h = dict_host[host]
             if overlap(o[0],o[1],h[0], h[1]):
                 #print "o: ", o
-                removeMe[toHash(o[2])] = calculate_overlap(o[0],o[1],h[0],h[1])
+                z = calculate_overlap(o[0],o[1],h[0],h[1])
+                hash = toHash(o[2])
+                if hash in removeMe:
+                    if removeMe[hash] < z:
+                        removeMe[hash] = z
+                else:
+                    removeMe[hash] = z
                 #print o, "\teliminated"
                 break
 
