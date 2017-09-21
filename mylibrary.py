@@ -12,13 +12,14 @@ class MyLibrary:
         return result
 
     def calculate_overlap(self, a1, a2, b1, b2):
-        if (a1 < b1 and a2 <= b2 ):
-            return a2 - b1
-        elif (a1 < b1 and b2 <= a2):
-            return b2 - b1
-        elif (b1 <= a1 and a2 <= b2):
-            return a2 - a1
-        elif (b1 <= a1 and b2 <= a2):
-            return b2 - a1
-        #return 0
-
+        if self.overlap(a1,a2,b1,b2):
+            if (a1 < b1 and a2 <= b2 ):
+                return a2 - b1 +1
+            elif (a1 < b1 and b2 <= a2):
+                return b2 - b1 +1
+            elif (b1 <= a1 and a2 <= b2):
+                return a2 - a1 +1
+            elif (b1 <= a1 and b2 <= a2):
+                return b2 - a1 +1
+        else:
+            return 0
