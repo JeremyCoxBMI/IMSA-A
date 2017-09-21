@@ -1,35 +1,9 @@
 import sys
-
+from mylibrary import *
 
 # Program takes output from utilCompareHitQualityHost and looks at overlap with non-organism hits
 
-def toHash(aList):
-    #print aList
-    #print "YO"
-    return aList[1]+aList[8]
 
-
-
-def calculate_overlap(a1, a2, b1, b2):
-    if (a1 < b1 and a2 <= b2 ):
-        return a2 - b1
-    elif (a1 < b1 and b2 <= a2):
-        return b2 - b1
-    elif (b1 <= a1 and a2 <= b2):
-        return a2 - a1
-    elif (b1 <= a1 and b2 <= a2):
-        return b2 - a1
-
-
-def overlap(a1, a2, b1, b2):
-    result = False
-
-    if  (a1 <= b2 and b2 <= a2) \
-        or  \
-        (a1 <= b1 and b1 <= a2 ) :
-        result = True
-
-    return result
 
 def printResults(dict_host, dict_organisms):
 
@@ -39,7 +13,7 @@ def printResults(dict_host, dict_organisms):
         for host in dict_host:
             o = dict_organisms[organism]
             h = dict_host[host]
-            if overlap(o[0],o[1],h[0], h[1]):
+            if (overlap(o[0],o[1],h[0], h[1])):
                 #print "o: ", o
                 z = calculate_overlap(o[0],o[1],h[0],h[1])
                 hash = toHash(o[2])
@@ -55,7 +29,7 @@ def printResults(dict_host, dict_organisms):
         #print "org: ", dict_organisms[org]
         if toHash(dict_organisms[org][2]) in removeMe:
             length = int(dict_organisms[org][0].split("_")[-1])
-            overlap = float(100)*(removeMe[toHash(dict_organisms[org][2]])/length
+            overlap = float(100)*(removeMe[toHash(dict_organisms[org][2])]/length
             print "not {0:.2}\t".format(overlap)+"\t".join(dict_organisms[org][2]).replace("\n","")
         else:
             print "unique\t"+"\t".join(dict_organisms[org][2]).replace("\n","")

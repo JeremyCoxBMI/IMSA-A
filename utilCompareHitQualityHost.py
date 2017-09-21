@@ -209,7 +209,7 @@ if __name__ == "__main__":
         #print splits[1]
 
 
-
+        speciesName = "not found"
 
         #Need a filter to not lookup human sequences
         # if splits[0] in unique and unique[splits[0]] != 9606 and unique[splits[0]] != 40674:  #filters human?  need parameteR?
@@ -293,13 +293,13 @@ if __name__ == "__main__":
         (query, ref, aligned_len, length, pident, true_pident, query_start, query_end,ref_start,ref_end, bitscore) = mytuple
         true_pident = int(100*true_pident)
 
-        if splits[0] in unique:  #winner
-            outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
+        if splits[0] in unique and unique[splits[0]] == speciesID:  #winner
+            outSet = [ splits[0], splits[1], str(speciesID), str(speciesName), str(aligned_len), str(length), str(pident),
                        str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
                        str(ref_end), str(bitscore)+"\t*"]
             print "\t".join(outSet)
         else:
-            outSet = [ splits[0], splits[1], str(speciesID), speciesName, str(aligned_len), str(length), str(pident),
+            outSet = [ splits[0], splits[1], str(speciesID), str(speciesName), str(aligned_len), str(length), str(pident),
                        str(true_pident), str(query_start), str(query_end), "<- query||ref -->", str(ref_start),
                        str(ref_end), str(bitscore)]
             print "\t".join(outSet)
