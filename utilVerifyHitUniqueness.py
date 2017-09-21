@@ -3,36 +3,42 @@ from mylibrary import *
 
 # Program takes output from utilCompareHitQualityHost and looks at overlap with non-organism hits
 
-
+lib = MyLibrary()
 
 def printResults(dict_host, dict_organisms):
 
-    #print "printResults size hosts\t", len(dict_host), "\tsize organisms\t", len(dict_organisms)
-    removeMe = {}
-    for organism in dict_organisms:
-        for host in dict_host:
-            o = dict_organisms[organism]
-            h = dict_host[host]
-            if (overlap(o[0],o[1],h[0], h[1])):
-                #print "o: ", o
-                z = calculate_overlap(o[0],o[1],h[0],h[1])
-                hash = toHash(o[2])
-                if hash in removeMe:
-                    if removeMe[hash] < z:
+        #print "printResults size hosts\t", len(dict_host), "\tsize organisms\t", len(dict_organisms)
+        removeMe = {}
+        for organism in dict_organisms:
+            for host in dict_host:
+                o = dict_organisms[organism]
+                h = dict_host[host]
+                if (lib.overlap(o[0],o[1],h[0], h[1])):
+                    #print "o: ", o
+                    z = lib.calculate_overlap(o[0],o[1],h[0],h[1])
+                    hash = lib.toHash(o[2])
+                    if hash in removeMe:
+                        if removeMe[hash] < z:
+                            removeMe[hash] = z
+                    else:
                         removeMe[hash] = z
-                else:
-                    removeMe[hash] = z
-                #print o, "\teliminated"
-                break
+                    #print o, "\teliminated"
+                    break
 
-    for org in dict_organisms:
-        #print "org: ", dict_organisms[org]
-        if toHash(dict_organisms[org][2]) in removeMe:
-            length = int(dict_organisms[org][0].split("_")[-1])
-            overlap = float(100)*(removeMe[toHash(dict_organisms[org][2])]/length
-            print "not {0:.2}\t".format(overlap)+"\t".join(dict_organisms[org][2]).replace("\n","")
-        else:
-            print "unique\t"+"\t".join(dict_organisms[org][2]).replace("\n","")
+        for org in dict_organisms:
+            #print "org: ", dict_organisms[org]
+            prevLine = "\t".join(dict_organisms[org][2]).replace("\n","")
+            # print >> sys.stderr,dict_organisms[org][2][0]
+            # print >> sys.stderr,""
+            # print >> sys.stderr,""
+            if lib.toHash(dict_organisms[org][2]) in removeMe:
+
+                length = int(dict_organisms[org][2][0].split("_")[-1])
+                overlap = float(100)*(removeMe[lib.toHash(dict_organisms[org][2])]/length)
+                print "not {0:.2}\t".format(overlap) + prevLine
+            else:
+                print "unique\t"+prevLine
+                ###
 
 
 
