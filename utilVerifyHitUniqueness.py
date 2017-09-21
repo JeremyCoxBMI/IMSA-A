@@ -18,73 +18,48 @@ def printResults(dict_host, dict_organisms):
             #mybreakdebug = 1
             return
 
-        # if len(dict_organisms) > 0:
-        #     key = dict_organisms.keys()[0]
-            # if dict_organisms[key][2][0].split("_")[-1]=="227":
-            #     mybreakdebug = 1
-        # if len(dict_host) > 0:
-        #     key = dict_host.keys()[0]
-        #     if dict_host[key][2][0].split("_")[-1]=="227":
-        #         mybreakdebug = 1
-
-        #print "printResults size hosts\t", len(dict_host), "\tsize organisms\t", len(dict_organisms)
         removeMe = {}
+
+        #calculate overlaps with host sequences for each Microbiome Sequence
         for organism in dict_organisms:
-            hash = dict_organisms[organism][2][0]
-            z = 0.0
+            o = dict_organisms[organism]
+            hash = o[2][0]
+
+            #overlap minimum is 0
+            removeMe[hash] = 0.0
             for host in dict_host:
-                o = dict_organisms[organism]
                 h = dict_host[host]
-                #if (lib.overlap(o[0],o[1],h[0], h[1])):
-                    #print "o: ", o
                 z = lib.calculate_overlap(o[0],o[1],h[0],h[1])
-                #hash = lib.toHash(dict_organisms[organism][2])
-                if hash in removeMe and removeMe[hash] > z:
-                        removeMe[hash] = z
-                # if hash in removeMe:
-                #     if removeMe[hash] < z:
-                #         removeMe[hash] = z
-                # else:
-                #     removeMe[hash] = z
-                #print o, "\teliminated"
-                break
+                #maximum overlap
+                if removeMe[hash] < z:
+                    removeMe[hash] = z
+                    # print >> sys.stderr, "REMOVING\t" + "\t".join(o[2]).replace("\n","")
+                    # print >> sys.stderr, "query: [",str(o[0]),", ",str(o[1]),"]\thost [",str(h[0]),", ",str(h[1]),"]"
 
-        for org in dict_organisms:
-            #print "org: ", dict_organisms[org]
-            prevLine = "\t".join(dict_organisms[org][2]).replace("\n","")
-            # print >> sys.stderr,dict_organisms[org][2][0]
-            # print >> sys.stderr,""
-            # print >> sys.stderr,""
-            length = int(dict_organisms[org][2][0].split("_")[-1])
-            #hash = lib.toHash(dict_organisms[org][2])
-            if dict_organisms[org][2][0] in removeMe:
-                overlap = float(100)*(removeMe[  dict_organisms[org][2][0]  ])/length
-            else:
-                overlap =0.0
+            prevLine = "\t".join(o[2]).replace("\n","")
+            length = int(o[2][0].split("_")[-1]) #queryName
 
-            if overlap > 0:
+            if removeMe[o[2][0]] > 0: #queryName
+                overlap = float(100)*(removeMe[  o[2][0]  ])/length
                 print "not\t{0:.2f}\t".format(overlap) + prevLine
             else:
-                print "unique\t0.00\t"+prevLine
+                overlap =0.0
+                print "not\t{0:.2f}\t".format(overlap) + prevLine
 
-            if overlap == 0.0:
-                outFile_0percent.write("\t".join(dict_organisms[org][2]))
-                outFile_10percent.write("\t".join(dict_organisms[org][2]))
-                outFile_20percent.write("\t".join(dict_organisms[org][2]))
-            elif overlap <= 10.0:
-                outFile_10percent.write("\t".join(dict_organisms[org][2]))
-                outFile_20percent.write("\t".join(dict_organisms[org][2]))
-            elif overlap <= 20.0:
-                outFile_20percent.write("\t".join(dict_organisms[org][2]))
-
-            # if overlap > 0.0:   #removeMe[dict_organisms[org][2][0]] > 0:
+            # if overlap > 0:
             #     print "not\t{0:.2f}\t".format(overlap) + prevLine
             # else:
             #     print "unique\t0.00\t"+prevLine
-                ###
 
-
-
+            if overlap == 0.0:
+                outFile_0percent.write("\t".join(o[2]))
+                outFile_10percent.write("\t".join(o[2]))
+                outFile_20percent.write("\t".join(o[2]))
+            elif overlap <= 10.0:
+                outFile_10percent.write("\t".join(o[2]))
+                outFile_20percent.write("\t".join(o[2]))
+            elif overlap <= 20.0:
+                outFile_20percent.write("\t".join(o[2]))
 
 if __name__ == "__main__":
 
