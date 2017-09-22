@@ -575,7 +575,7 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
             numFamily += 1
 
     outBig.write("IMSA+A metataxonomics report\n\nSUMMARY\n")
-    outBig.write("{:10}".format((str(numFirstTaxon))) + "Total unique lowest taxa identified\n")
+    outBig.write("{:10}".format(str(numFirstTaxon)) + "Total unique lowest taxa identified\n")
     outBig.write("{:10}".format(str(numSpecies)) + "Total unique Species identified\n")
     outBig.write("{:10}".format(str(numGenus)) + "Total unique Genera identified\n")
     outBig.write("{:10}".format(str(numFamily)) + "Total unique Families identified\n")
