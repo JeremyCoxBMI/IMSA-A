@@ -6,17 +6,17 @@ from mylibrary import *
 lib = MyLibrary()
 
 #percent overlap human
-outFile_0percent = open(sys.argv[1]+".0percent.bln","w")
-outFile_10percent = open(sys.argv[1]+".10percent.bln","w")
-outFile_20percent = open(sys.argv[1]+".20percent.bln","w")
+outFile_0percent = open("0percent.bln","w")
+outFile_10percent = open("10percent.bln","w")
+outFile_20percent = open("20percent.bln","w")
 
 
 def printResults(dict_host, dict_organisms):
 
 
-        if len(dict_organisms) ==0 and len(dict_host) == 0:
-            #mybreakdebug = 1
-            return
+        # if len(dict_organisms) ==0 and len(dict_host) == 0:
+        #     #mybreakdebug = 1
+        #     return
 
         removeMe = {}
 
@@ -51,6 +51,7 @@ def printResults(dict_host, dict_organisms):
             # else:
             #     print "unique\t0.00\t"+prevLine
 
+            #TODO bug: not writing out all values here (5702 expected in overlap 20%
             if overlap == 0.0:
                 outFile_0percent.write("\t".join(o[2]))
                 outFile_10percent.write("\t".join(o[2]))
