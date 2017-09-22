@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-## SEVERAL INFORMATION PIECES NEEDED
-#  to rank sequence quality
-#     length of original sequence
-
+#############
+# Assuming human host, this program evaluates the quality of alignments based on length.
+# Primarily as input to utilVerifyHitUniqueness, which considers splitting chimeras to generate new alignment files.
+#############
 
 
 # arg 1: file of blast hit outputs
@@ -18,8 +18,6 @@ from postprocesscount4acc import *
 
 
 def processReferences2Taxon(refToTaxon):
-
-
 
     print >> sys.stderr, "       : Accessing NCBI for %d taxonomies" % len(taxID_to_lookup)
     #V2: getTaxa for GI alignments and the fungiDB alignments

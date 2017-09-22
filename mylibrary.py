@@ -1,4 +1,6 @@
 
+# function library to by-pass instance functions
+
 class MyLibrary:
     def toHash(self, aList):
         #print aList

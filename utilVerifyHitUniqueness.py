@@ -1,6 +1,12 @@
 import sys
 from mylibrary import *
 
+#################
+# Considers splitting chimeras to generate new alignment files.
+# Program takes output from utilCompareHitQualityHost and evaluates overlap between non-host alignments and host alignments.
+# Outputs 0% overlap allowed, 10%, and 20%
+#################
+
 # Program takes output from utilCompareHitQualityHost and looks at overlap with non-organism hits
 
 lib = MyLibrary()
