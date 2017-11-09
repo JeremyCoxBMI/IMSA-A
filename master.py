@@ -549,7 +549,7 @@ def writeFilterFromBowtie(outputDir, input1, input2, fileType, line, numProcesso
         bowtieDB = config.BOWTIE_DATABASES[pieces[1]]
     except KeyError:
         raise Exception("Unable to find '%s' in the set of BOWTIE databases.  Valid entries are:\n\t%s" % (pieces[1],
-                                              "\n\t".join(BOWTIE_DATABASES.keys())))
+                                              "\n\t".join(config.BOWTIE_DATABASES.keys())))
 
     
 
