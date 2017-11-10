@@ -6,8 +6,10 @@
 
 ########################  The following variables will have to be changed for all installations #######
 
-# this is the full path of the directory that contains the 'imsa' directory with your code.  
-SRC_DIRECTORY = "/home/osboxes/imsa.develop/imsa-a/"
+# this is the full path of the directory that contains the 'imsa-a' directory with your code.
+
+#  example: full path "/home/osboxes/taxonomy/imsa-a"
+SRC_DIRECTORY = "/home/osboxes/taxonomy/"
 
 # BOWTIE_DATABASES specifies where the ebwt index lives for each bowtie database you want to use in
 # IMSA.  The path should be the full path that you would use on a bowtie command line when referencing
@@ -48,7 +50,7 @@ PATH_TO_BLASTN = "blastn"
 PATH_TO_BLAT = "blat"
 
 
-# PIPELINE_DIRECTORY is the name of the python module.  It will be imsa unless you change the
+# PIPELINE_DIRECTORY is the name of the python module.  It will be imsa-a unless you change the
 # name of the directory after unpacking the imsa tarball
 # IMSA+A Dec 2016 update: name changed
 PIPELINE_DIRECTORY = "imsa-a"
