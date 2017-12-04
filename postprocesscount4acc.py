@@ -497,13 +497,15 @@ def reportTaxonomyJWC(blastInput, printTargets=False, outputPrefix=None, dotPref
                 #sname = taxaNames[ taxID ]     #bug 12/06/2016
                 sname = single[ single.keys()[0] ].getSpecies().sname
                 print "*&*&* sname is ", sname
-                kingdom = findKingdom(single[ single.keys()[0] ].getPhylum().taxId, taxaNodes)
-                if single[single.keys()[0]].getSpecies():
-                    savedKingdom[single[ single.keys()[0]].getSpecies().taxId ] = kingdom
-                if single[single.keys()[0]].getGenus():
-                    savedKingdom[single[single.keys()[0]].getGenus().taxId] = kingdom
-                if single[single.keys()[0]].getFamily():
-                    savedKingdom[single[single.keys()[0]].getFamily().taxId] = kingdom
+                if len(single.keys()) > 0:
+                    if single[ single.keys()[0] ].getPhylum():
+                        kingdom = findKingdom(single[ single.keys()[0] ].getPhylum().taxId, taxaNodes)
+                    if single[single.keys()[0]].getSpecies():
+                        savedKingdom[single[ single.keys()[0]].getSpecies().taxId ] = kingdom
+                    if single[single.keys()[0]].getGenus():
+                        savedKingdom[single[single.keys()[0]].getGenus().taxId] = kingdom
+                    if single[single.keys()[0]].getFamily():
+                        savedKingdom[single[single.keys()[0]].getFamily().taxId] = kingdom
             else:
                 sname = -1
                 count = taxaCount[taxID]

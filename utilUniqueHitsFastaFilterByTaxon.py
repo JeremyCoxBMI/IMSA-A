@@ -18,7 +18,7 @@ The IMSA license file and notice of copyright is included with this release.
 
 ###################################################
 # Utility program: allows user to quickly create a fasta file containing only the sequences that created unique hits
-# at a chosen clade level.
+# to a certain Taxon ID.
 #
 ###################################################
 
@@ -30,40 +30,37 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv
 
-    if (len(argv) != 6):
-        print "\tProper usage:\n\tpython "+argv[0]+" <clade selection> <fasta file> <unique alignments file> <output unique.fa> <output not_unique.fa>"
-        print "\t\tclade selection choices: firstTaxa, species, genus, or family"
+    if (len(argv) != 3):
+        print "\tProper usage:\n\tpython "+argv[0]+" <assembled fasta file> <TaxonID>"
+
         exit(0)
 
-    outFuniq = open(argv[4],'w')
-    outFnotUniq = open(argv[5],'w')
+
     #uniq = open(argv[3])
     #fasta = open(argv[2])
     clade = argv[1].strip()     #   I am paranoid about whitespace
 
+    taxonID = int(argv[2])
+
     listQueryKeep = {}
 
-    for line in open(argv[3]):
-        splits = line.split('\t')
-        if splits[1] == clade:
-            listQueryKeep[ splits[0] ] = splits[2].strip()
+    for line in open(argv[1]+".tax_uniqueAlignments.txt"):
+        splits = line.strip().split('\t')
+        if int(splits[2]) == taxonID:
+            listQueryKeep[ splits[0] ] = 1
 
     write = False
-    for line in open(argv[2]):
+    for line in open(argv[1]):
         if line[0] == ">":
             short = line[1:].strip().split()[0]  #inchworm compatible
             if short in listQueryKeep:
                 write = True
-                line = ">"+short+" "+clade+":taxonID:"+listQueryKeep[short]+"\n"
+                line = ">"+short
             else:
                 write = False
         if write:
-            outFuniq.write(line)
-        else:
-            outFnotUniq.write(line)
+            print line.strip()
 
-    outFuniq.close()
-    outFnotUniq.close()
 
 ##############################################
 if __name__ == "__main__":

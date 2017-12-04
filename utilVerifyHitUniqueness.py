@@ -96,6 +96,8 @@ if __name__ == "__main__":
                "true pident by query length", "query start", "query end", "note" , "ref start", "ref end", "bitscore"]
     print "\t".join(outSet)
 
+
+    print >> sys.stderr, "Initialization"
     #firstLine = True
     k=1
     for line in open(compareHitHostFile):
@@ -130,16 +132,18 @@ if __name__ == "__main__":
                 dict_organisms[splits[0]+splits[1]+str(query_start)+str(query_end)]= (query_start, query_end, splits)
         k += 1
 
+    print >> sys.stderr, "Open Output Files"
     #percent overlap human
     outFile_0percent = open("0percent.bln","w")
     outFile_10percent = open("10percent.bln","w")
     outFile_20percent = open("20percent.bln","w")
 
-
+    print >> sys.stderr, "Write Output Files"
     for line in open(bln_source):
         if len(line) > 10:   #skip empty lines
             splits = line.split()
             coor = (splits[0], splits[1])
+            print >> sys.stderr, "Coor\t",coor
 
             if coor in dict_0:
                 outFile_0percent.write(line)
